@@ -9,7 +9,7 @@ class SMTM_token:
         self.name = name
         self.surname = surname
         # can be nullable but we want to keep it as string?
-        if account_name == None:
+        if account_name is None:
             self.account_name = 'None'
         else:
             self.account_name = account_name
