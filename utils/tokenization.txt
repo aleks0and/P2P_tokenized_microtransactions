@@ -1,0 +1,131 @@
+  // z=2
+struct smtm_token{
+    string name;
+    string surname;
+    string account_number;
+    string username;
+    int32 balance; 
+    string balance_string;
+    string email_address;
+    int8 status;
+    int8 token_type;
+    uint date_creation;
+    uint date_settled;
+}
+
+// four types of token_type. 0,1,2,3. 0 someone owes you cash.
+// 1 means you owe someone cash
+// 2 means you lend someone object_type
+// 3 means someone lend you object_type
+// for token status we expect it to be either 0 or 1. 
+// 1 means active(pending)
+// 0 means inactive(settled)
+// token status 
+// Usually the account_number consits of 30+ alphanumerical digits, hence the string store
+// first two elements of account_number the string are the Country code
+// first four elements of account_number are check country, verification digits
+// can be nullable but we want to keep it as string?
+// balance is how much you owe,owed 
+// Do verification of email_address later
+struct user{
+    string name;
+    string surname;
+    string account_number;
+    string username;
+    string email_address;
+}
+
+
+struct user_account{
+    user user_info;
+    stmt_token[] token_owned_pending;
+    stmt_token[] token_owned_settled;
+}
+
+
+
+function parse_user_info(user user_info) public{
+    stmt_token memory token = smtm_token({name:user_info.name,
+        surname:user_info.surname, account_number:user_info.account_number,
+        balance:-1,balance_string:"",username:user_info.username,
+        email_address:user_info.email_address,status:-1,token_type:-1,
+        date_creation:-1,date_settled:-1});
+    return stmt_token
+}
+
+function update_token_settlement(stmt_token token) public{
+    token.date_settled = now
+    token.status = 0
+    return token
+}
+
+function update_token(stmt_token token, int8 token_type) public{
+    token.date_creation = now
+    token.status = 1
+    token.token_type = token_type
+    return token
+}
+
+function get_user_pending_tokens(user_account account) public{
+    uint number_of_tokens = account.token_owned_pending.length
+    for (uint i=0; i<=number_of_tokens; i++){
+        string exposure_username = account.token_owned_pending[i].username
+        if (account.token_owned_pending[i].balance == -1){
+            string exposure_balance = account.token_owned_pending[i].balance_string
+        }
+        else{
+            uint exposure_balance = account.token_owned_pending[i].balance
+        }
+        // todo: how the fuck do you print this?
+    }
+}
+
+contract token_creation {
+  stmt_token private lendee;
+  stmt_token private lender;
+  string private salt;
+  constructor(user lender_info,user lendee_info,
+              int32 balance, string balance_string) {
+    
+    lendee = parse_user_info(lendee_info)
+    lender = parse_user_info(lender_info)
+    // logic about barter.
+    // if balance = -1 it is a barter
+    if (balance == -1){
+        lender = update_token(lender, 2)
+        lendee = update_token(lendee, 3)
+        lender.balance_string = balance_string
+        lendee.balance_string = balance_string
+    }
+    else{
+        lender = update_token(lender, 0)
+        lendee = update_token(lendee, 1)
+        lender.balance = balance 
+        lendee.balance = balance * -1
+    }
+    salt = ""
+  }
+  // ideally we get all necessary info from app. 
+  // below are the exposure methods we will provide to app back.
+  // we will not allow for setter 
+  // basic getter 
+  function return_token_lender() public {
+     return lender;
+  }
+  // basic getter
+  function return_token_lendee() public {
+     return lendee;
+  }
+  // todo: write token transfer, and token split (basicly this is taking 
+  // number of user to participate and create / updates token information 
+  // for all of them )
+
+    
+    function settle_contract(stmt_token lender, stmt_token lendee) public{
+        lender = update_token_settlement(lender)
+        lendee = update_token_settlement(lendee)
+}
+
+} 
+
+
