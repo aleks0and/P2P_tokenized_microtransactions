@@ -19,4 +19,4 @@ pip install allthingsneeded
 ```
 ## Authors
 
-* **Name Surname **
+* **Name Surname**
