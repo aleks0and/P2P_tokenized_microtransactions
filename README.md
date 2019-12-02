@@ -17,3 +17,6 @@ What things you need to install the software and how to install them
 ```bash
 pip install allthingsneeded
 ```
+## Authors
+
+* **Name Surname **
