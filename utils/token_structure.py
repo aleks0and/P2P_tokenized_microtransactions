@@ -3,6 +3,7 @@
 # @todo: definition of token types
 # @todo: verify variable types
 
+
 class SMTM_token:
     def __init__(self, name, surname, account_name, balance, email_address,
                  status, token_type, date_in, date_out) -> None:

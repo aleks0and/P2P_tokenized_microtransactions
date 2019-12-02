@@ -1,5 +1,6 @@
-  // z=2
 struct smtm_token{
+    // we might not need to story name surname etc. on the token, he're we can store only username == user_id and we can retreive it from our db. 
+    // or we can just store everything on the tokens not to keep such info on db. 
     string name;
     string surname;
     string account_number;
@@ -39,6 +40,7 @@ struct user{
 struct user_account{
     user user_info;
     stmt_token[] token_owned_pending;
+// this is most likely going to be stored in form of db. (not from the side of the contracts)
     stmt_token[] token_owned_settled;
 }
 
@@ -80,50 +82,125 @@ function get_user_pending_tokens(user_account account) public{
     }
 }
 
-contract token_creation {
-  stmt_token private lendee;
-  stmt_token private lender;
-  string private salt;
-  constructor(user lender_info,user lendee_info,
-              int32 balance, string balance_string) {
-    
-    lendee = parse_user_info(lendee_info)
-    lender = parse_user_info(lender_info)
-    // logic about barter.
-    // if balance = -1 it is a barter
-    if (balance == -1){
-        lender = update_token(lender, 2)
-        lendee = update_token(lendee, 3)
-        lender.balance_string = balance_string
-        lendee.balance_string = balance_string
+function retrieve_user_info(string user_id, bool from_app) public{
+    // retrieve user_info from db or from app_info.
+    // mocked user for now
+    if (from_app){
+        user user_info = user({name:"name", surname:"surname", account_number:"account_number", 
+                           username:user_id, email_address:"user@email.com"}) 
     }
     else{
-        lender = update_token(lender, 0)
-        lendee = update_token(lendee, 1)
-        lender.balance = balance 
-        lendee.balance = balance * -1
+        user user_info = user({name:"name", surname:"surname", account_number:"account_number", 
+                               username:user_id, email_address:"user@email.com"}) 
     }
-    salt = ""
-  }
+    return user_info
+}
+
+contract stmt_token_handling {
+    stmt_token private lendee;
+    stmt_token private lender;
+    string private salt;
+    constructor(user lender_info,user lendee_info,
+              int32 balance, string balance_string) {
+    
+        lendee = parse_user_info(lendee_info)
+        lender = parse_user_info(lender_info)
+    // logic about barter.
+    // if balance = -1 it is a barter
+        if (balance == -1){
+            lender = update_token(lender, 2)
+            lendee = update_token(lendee, 3)
+            lender.balance_string = balance_string
+            lendee.balance_string = balance_string
+        }
+        else{
+            lender = update_token(lender, 0)
+            lendee = update_token(lendee, 1)
+            lender.balance = balance 
+            lendee.balance = balance * -1
+        }
+        salt = ""
+      }
   // ideally we get all necessary info from app. 
   // below are the exposure methods we will provide to app back.
   // we will not allow for setter 
   // basic getter 
-  function return_token_lender() public {
-     return lender;
-  }
-  // basic getter
-  function return_token_lendee() public {
-     return lendee;
-  }
+  // we should write getters for specific fields in the tokens, not tokens as a whole
+    function return_token_lender() public {
+         return lender;
+    }
+    function return_token_lendee() public {
+        return lendee;
+    }
+    
+    
+    
   // todo: write token transfer, and token split (basicly this is taking 
   // number of user to participate and create / updates token information 
   // for all of them )
-
+  // we're using ints only here
+  // we're generating as many tokens as there are people in the transaction, with orientation 1 lender multiple lendees.
+    function split_payment(string lender_id, string[] lendee_ids, int balance, string balance_string, bool even_split, int32[] split ) public{
+        // get user info from db
+        user lender = retrieve_user_info(lender_id, false)
+        user[] lendees = user[lendee_ids.length]
+        // we're using same name here as we're resolving this in separate cases. 
+        if (balance == -1){
+            // string operations in solidity?
+            string balance_division = balance_string + '1/$lendee_ids.length'
+        }
+        else{
+            int32 balance_division = balance / lendee_ids.length
+        }
+        int32 sum = 0
+        for (uint i=0; i<=lendee_ids.length; i++){
+            // we're reading lender infos from db
+            lendees[i] = retrieve_user_info(lendee_ids[i], false)
+            // structure her is wrong for now. cause here we'd like to create tokens where we shouldn't apply to constructor
+            if (even_split){
+                if(balance == -1){
+                    // handling of balance as string and number has to be corrected
+                    constructor(lender, lendees[i], balance, balance_division)
+                }
+                else{
+                    constructor(lender, lendees[i], balance_division, balance_string)        
+                }
+            }
+        }
+    }
+    function token_transfer(string transfer_origin, string transfer_destination, string accepting_party, stmt_token token_origin, stmt_token token_accepting)
+    {
+        // we create token between accepting_party and transfer_destination with the balance from the original token.
+        int amount_transefered_int = token_accepting.balance
+        int amount_transefered_string = token_accepting.balance_string
+        settle_contract(token_origin, token_accepting)
+        if (token_origin.token_type == 1 || token_origin.token_type == 3){
+            // this means origin owed 
+            user lender = retrieve_user_info(accepting_party)
+            user lendee = retrieve_user_info(transfer_destination)
+            constructor(lender, lendee, amount_transefered_int, amount_transefered_string)
+        }
+        else{
+            user lender = retrieve_user_info(transfer_destination)
+            user lendee = retrieve_user_info(accepting_party)
+            if (amount_transefered_int == -1){
+                constructor(lender, lendee, amount_transefered_int, amount_transefered_string)
+            }
+            else{
+                constructor(lender, lendee, amount_transefered_int * -1, amount_transefered_string)
+            }
+        }
+        // TODO: write function which returns lender and lendee in this way from two tokens. 
+        //user new_lender = retrieve_user_info(tran) 
+        constructor()
+    }
     
     function settle_contract(stmt_token lender, stmt_token lendee) public{
         lender = update_token_settlement(lender)
         lendee = update_token_settlement(lendee)
+        // send signal with token info into our db to keep track about settled contracts
+        // what information do we want to keep in this case?
+        // balance/balance_string, date_in, date_out, username. id of users account nr. (we dont want to keep info about the number but rather if there are multiple accounts)
 }
 
 } 
