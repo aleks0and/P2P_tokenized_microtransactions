@@ -9,12 +9,12 @@ contract main_structure{
     mapping (address => stmt_token) private __tokens_hold;
     stmt_token_operations __token_generator;
     // this structure should be optimized? mapping would be better i guess (assuming it has dict structure, but for now lets leave as list)
-    constructor(address[] memory other_party, int32[] memory balance, bytes[] memory balance_string, int16[] memory currency_type) public{
-        add_new_tokens(other_party, balance, balance_string, currency_type);
+    constructor(address[] memory other_party, int32[] memory balance, bytes[] memory balance_string, int16[] memory currency_type, bytes memory title) public{
+        add_new_tokens(other_party, balance, balance_string, currency_type, title);
     }
     
-    function add_new_tokens(address[] memory other_party, int32[] memory balance, bytes[] memory balance_string, int16[] memory currency_type) public{
-        __token_generator = new stmt_token_operations(other_party, balance, balance_string, currency_type);
+    function add_new_tokens(address[] memory other_party, int32[] memory balance, bytes[] memory balance_string, int16[] memory currency_type, bytes memory title) public{
+        __token_generator = new stmt_token_operations(other_party, balance, balance_string, currency_type, title);
         stmt_token[] memory first_tokens = __token_generator.get_tokens();
         for (uint i=0; i < first_tokens.length; i++){
             // we have to change this for hashing function (to include it logic below)
@@ -64,8 +64,9 @@ contract main_structure{
         int16[] memory currency_type = new int16[](2);
         currency_type[0] = original_token.get_token_currency_type();
         currency_type[1] = currency_type[0];
+        bytes memory title = original_token.get_token_title();
         // this could be written better (a function to copy)
-        add_new_tokens(involved_party, balance, balance_string, currency_type);
+        add_new_tokens(involved_party, balance, balance_string, currency_type, title);
         
     }
     
@@ -91,14 +92,14 @@ contract stmt_token_operations{
     // we can take the assumption that we multiply incomming transaction values by 100.
     // we sub them by multiplying the value of the transaction by 100. because there is no support for double/floats
 
-    constructor(address[] memory other_party, int32[] memory balance, bytes[] memory balance_string, int16[] memory currency_type) public {
+    constructor(address[] memory other_party, int32[] memory balance, bytes[] memory balance_string, int16[] memory currency_type, bytes memory title) public {
     // logic about barter.
     // if token_string is true it is a barter
         uint count = 0;
         for (uint i=1; i<other_party.length; i++){
-            __tokens[count] = new stmt_token(other_party[0], other_party[i], balance[i], currency_type[i], balance_string[i], false);        
+            __tokens[count] = new stmt_token(other_party[0], other_party[i], balance[i], currency_type[i], balance_string[i], false, title);        
             count += 1;
-            __tokens[count] = new stmt_token(other_party[i], other_party[0], balance[i], currency_type[i], balance_string[i], true);        
+            __tokens[count] = new stmt_token(other_party[i], other_party[0], balance[i], currency_type[i], balance_string[i], true, title);        
             count += 1;
         }
     }    
@@ -117,6 +118,7 @@ contract stmt_token{
     int32 private __balance;  // balance is how much you owe or are owed.
     int16 private __currency_type; // we're going to store it on the application config files. ex. EUR - 0, USD - 1, YEN - 2....
     bytes private __balance_string; // same as above but in objects.
+    bytes private __title;
     bool private __token_string; // indication if the token object is written in string
     bool private __token_status; // indication if the token is completed or not
     bool private __token_owed; // indication if the token is lendee or lender
@@ -129,13 +131,14 @@ contract stmt_token{
     } 
 
     constructor(address owner, address other_side, int32 balance, int16 currency_type, bytes memory balance_string,
-                bool token_owed) public 
+                bool token_owed, bytes memory title) public 
     {
         __owner = owner;
         __other_side = other_side;
         __balance = balance;
         __currency_type = currency_type;
         __balance_string = balance_string;
+	__title = title;
         __token_status = true; // 1 for pending 0 for settled 
         __token_owed = token_owed;
         __date_creation = now;
@@ -176,6 +179,10 @@ contract stmt_token{
         return __currency_type;
     }
     
+    function get_token_title() public view returns(bytes memory){
+	return __title;
+    }
+	
     function get_token_owed() public view returns(bool){
         return __token_owed;
     }
