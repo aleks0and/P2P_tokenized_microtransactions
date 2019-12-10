@@ -19,4 +19,8 @@ pip install allthingsneeded
 ```
 ## Authors
 
-* **Name Surname**
+* **Ivan Knezevic**
+* **Aleksander Kusmierczyk**
+* **Georgios Nomikos**
+* **Weiting Ye**
+
