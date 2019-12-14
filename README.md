@@ -26,14 +26,9 @@ This repository contains code and all related documents for the deployment of ou
 
 ## Prerequisites
 
-What things you need to install the software and how to install them
-
-
 Solidity v0.5.11
 
-```bash
-pip install allthingsneeded
-```
+
 ## Authors
 
 * **Ivan Knezevic**
