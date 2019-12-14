@@ -21,7 +21,7 @@ We are building our token as an undeniable Proof-of-Transactions described as a 
 
 ## Getting started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system
+This repository contains code and all related documents for the deployment of our smart contract solution to organize loans between people.
 
 
 ## Prerequisites
