@@ -24,9 +24,9 @@ During the development process of this project we came into couple of hurdles wh
 - Further integration for the front end: We provide just solidity file as well as the jupyter notebook file for the credit score evaluation. For the further development we wish to include the front-end for the app as designed in the application layout. 
 
 ## Repository structure
-There are three files in the repository. Namely 'App_design','Code' and 'Docs'
-App_design consists of the layout of application and the database
-Code includes all the work done in Solidity and Python
+There are three files in the repository. Namely 'App_design','Code' and 'Docs'.
+App_design consists of the layout of application and the database.
+Code includes all the work done in Solidity and Python.
 Docs has the competition analysis, the credit score system, the market and our competition and finally the descritpion of the work that we have done.
 Finally there is a README file which explains what the project is about.
 
