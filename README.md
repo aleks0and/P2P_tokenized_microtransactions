@@ -17,8 +17,11 @@ We are building our token as an undeniable Proof-of-Transactions described as a 
 
 For the development of the application, we have been using the extreme programming approach. This should explain the number of commits in the repository because we are a group of people who worked simultaneously on the code.
 
-
-
+## Future development
+During the development process of this project we came into couple of hurdles which we see as the future improvements:
+-changing string variables into bytes: According to the community bytes is much better structure to hold string variables and it uses much less resources.
+-updating the hashing function: We wanted to use combination of both addresses of the parties involved and the timestamp of the transaction. As we wanted to to receive a unique identifier for the operation, to further store it in our database for credit score evaluation. 
+-further integration for the front end: We provide just solidity file as well as the jupyter notebook file for the credit score evaluation. For the further development we wish to include the front-end for the app as designed in the application layout. 
 
 ## Getting started
 
