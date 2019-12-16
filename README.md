@@ -1,6 +1,6 @@
 # P2P_tokenized_microtransactions
 
-# Project description 
+# Product description 
 
 Multi-platform smart contract solution to organize loans between people.
 
