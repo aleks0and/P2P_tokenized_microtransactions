@@ -23,7 +23,12 @@ During the development process of this project we came into couple of hurdles wh
 - Updating the hashing function: We wanted to use combination of both addresses of the parties involved and the timestamp of the transaction. As we wanted to to receive a unique identifier for the operation, to further store it in our database for credit score evaluation. 
 - Further integration for the front end: We provide just solidity file as well as the jupyter notebook file for the credit score evaluation. For the further development we wish to include the front-end for the app as designed in the application layout. 
 
-
+## Repository structure
+There are three files in the repository. Namely 'App_design','Code' and 'Docs'
+App_design consists of the layout of application and the database
+Code includes all the work done in Solidity and Python
+Docs has the competition analysis, the credit score system, the market and our competition and finally the descritpion of the work that we have done.
+Finally there is a README file which explains what the project is about.
 
 ## Prerequisites
 Solidity v0.5.11
